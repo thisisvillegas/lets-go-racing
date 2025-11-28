@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - 'backend/**' # Only trigger on changes in the backend directory
       - '.github/workflows/deploy-backend.yml'
 
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: racing-dashboard-backend
-  ECS_CLUSTER: racing-dashboard-cluster
+  ECS_CLUSTER: racing-dashboard-cluster3
   ECS_SERVICE: racing-dashboard-service
 
 jobs:

@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Health check endpoint (no auth required)
 app.get('/health', (req: Request, res: Response) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+    res.json({ status: 'ok', timestamp: new Date().toISOString(), version: 'v1.0.42' });
 });
 
 // ============================================
