@@ -1,12 +1,13 @@
-import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-import { auth } from 'express-oauth2-jwt-bearer';
-import { lambdaService } from './lambdaService'
-import { databaseService } from './database';
 
 // Load environment variables
 dotenv.config();
+
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import { auth } from 'express-oauth2-jwt-bearer';
+import { lambdaService } from './lambdaService'
+import { databaseService } from './database';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
