@@ -16,6 +16,14 @@ export const authConfig: AuthConfig = {
                         audience: 'https://api.racing-dashboard.com',
                     }
                 }
+            },
+            {
+                uri: 'http://racing-dashboard-alb-332277837.us-east-1.elb.amazonaws.com/api/*',
+                tokenOptions: {
+                    authorizationParams: {
+                        audience: 'https://api.racing-dashboard.com',
+                    }
+                }
             }
         ]
     }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '@auth0/auth0-angular';
-import { environment } from '../../../environment';
+import { environment } from '../../../environments/environment';
 
 interface WeatherData {
   location: string;
