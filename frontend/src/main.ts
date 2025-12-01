@@ -1,7 +1,7 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import * as Sentry from '@sentry/angular';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
-import * as Sentry from '@sentry/angular';
 import { environment } from './environments/environment';
 
 // Initialize Sentry BEFORE bootstrapping the app
@@ -15,6 +15,7 @@ Sentry.init({
       blockAllMedia: false,
     }),
   ],
+  sendDefaultPii: true,
 
   // Performance Monitoring
   tracesSampleRate: environment.production ? 0.1 : 1.0, // 10% in prod, 100% in dev

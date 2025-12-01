@@ -3,8 +3,10 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+import './instrument';
+import * as Sentry from '@sentry/node';
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
+import cors from 'cors'
 import { auth } from 'express-oauth2-jwt-bearer';
 import { lambdaService } from './lambdaService'
 import { databaseService } from './database';
@@ -29,6 +31,10 @@ app.use('/api', jwtCheck);
 // Health check endpoint (no auth required)
 app.get('/health', (req: Request, res: Response) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString(), version: 'v1.0.42' });
+});
+
+app.get('/api/test-error', (req: Request, res: Response) => {
+    throw new Error('This is a test error for Sentry!');
 });
 
 // ============================================
@@ -206,6 +212,8 @@ app.delete('/api/files/:fileId', async (req: Request, res: Response) => {
 // ============================================
 // ERROR HANDLING
 // ============================================
+
+Sentry.setupExpressErrorHandler(app);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

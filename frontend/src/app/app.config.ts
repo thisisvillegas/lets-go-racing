@@ -1,5 +1,5 @@
-import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, Router } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAuth0 } from '@auth0/auth0-angular';
 import { authHttpInterceptorFn } from '@auth0/auth0-angular';
@@ -25,7 +25,13 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: Sentry.TraceService,
-      deps: [],
+      deps: [Router],
     },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => () => { },
+      deps: [Sentry.TraceService],
+      multi: true,
+    }
   ]
 };
