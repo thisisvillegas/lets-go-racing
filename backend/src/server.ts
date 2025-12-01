@@ -224,7 +224,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 Health check available at http://localhost:${PORT}/health`);
+    console.log(`📍 Health check available at  https://api.thisisvillegas.com/health`);
 });
 
 export default app;

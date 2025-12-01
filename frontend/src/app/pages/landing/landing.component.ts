@@ -18,7 +18,7 @@ import { AuthService } from '@auth0/auth0-angular';
 
       <main class="content">
         <section class="hero">
-          <h2>Never Miss a Race</h2>
+          <h2>Never Miss a Race - Now Fully Deployed!</h2>
           <p>Track upcoming MotoGP and F1 races with real-time weather data</p>
         </section>
 
