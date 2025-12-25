@@ -21,6 +21,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+        path: 'brain-dump',
+        loadComponent: () => import('./pages/brain-dump/brain-dump.component').then(m => m.BrainDumpComponent),
+        canActivate: [AuthGuard]
+    },
+    {
         path: '**',
         redirectTo: ''
     }

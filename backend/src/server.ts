@@ -10,6 +10,7 @@ import cors from 'cors'
 import { auth } from 'express-oauth2-jwt-bearer';
 import { lambdaService } from './lambdaService'
 import { databaseService } from './database';
+import brainDumpRoutes from './routes/brainDumpRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,9 @@ const jwtCheck = auth({
 });
 
 app.use('/api', jwtCheck);
+
+// Brain Dump routes
+app.use('/api/brain-dump', brainDumpRoutes);
 
 // Health check endpoint (no auth required)
 app.get('/health', (req: Request, res: Response) => {

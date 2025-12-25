@@ -5,6 +5,7 @@
             <span class="logo-text">Your Dashboard</span>
         </div>
         <div class="nav-actions">
+            <a routerLink="/brain-dump" class="nav-link">Brain Dump</a>
             <a routerLink="/preferences" class="nav-link">Preferences</a>
             <button class="btn-logout" (click)="logout()">Logout</button>
         </div>
@@ -121,6 +122,10 @@
                     <h2>Quick Actions</h2>
                 </div>
                 <div class="widget-content">
+                    <a routerLink="/brain-dump" class="action-btn">
+                        <span class="action-icon">&#128161;</span>
+                        <span>Brain Dump</span>
+                    </a>
                     <a routerLink="/preferences" class="action-btn">
                         <span class="action-icon">&#9881;</span>
                         <span>Preferences</span>

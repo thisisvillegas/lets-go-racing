@@ -1,0 +1,270 @@
+<div class="page-container">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a routerLink="/dashboard" class="back-link">
+                <span class="back-arrow">&larr;</span>
+            </a>
+            <span class="logo-icon">&#128161;</span>
+            <span class="logo-text">Brain Dump</span>
+        </div>
+        <div class="nav-actions">
+            <button class="btn btn-primary" (click)="openIntakeModal()">
+                <span class="btn-icon">+</span>
+                New Dump
+            </button>
+            <button class="btn btn-secondary" (click)="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    <div class="messages-container" *ngIf="error || success">
+        <div class="message error" *ngIf="error">{{ error }}</div>
+        <div class="message success" *ngIf="success">{{ success }}</div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading">
+        <div class="loading-spinner"></div>
+        <p>Loading your brain dump...</p>
+    </div>
+
+    <!-- Main Content - Bucket Columns -->
+    <main class="board-container" *ngIf="!isLoading" cdkDropListGroup>
+        <div class="bucket-column" *ngFor="let bucket of buckets">
+            <div class="bucket-header" [style.border-left-color]="bucket.color">
+                <div class="bucket-title">
+                    <span class="bucket-color" [style.background]="bucket.color"></span>
+                    <h3>{{ bucket.name }}</h3>
+                </div>
+                <span class="card-count">{{ getCardCount(bucket._id) }}</span>
+            </div>
+
+            <div
+                class="card-list"
+                cdkDropList
+                [cdkDropListData]="getCardsForBucket(bucket._id)"
+                (cdkDropListDropped)="onCardDrop($event, bucket._id)">
+
+                <div
+                    class="card-item"
+                    *ngFor="let card of getCardsForBucket(bucket._id)"
+                    cdkDrag
+                    (click)="openCardModal(card)">
+
+                    <div class="card-drag-handle" cdkDragHandle>
+                        <span class="drag-icon">&#8942;&#8942;</span>
+                    </div>
+
+                    <div class="card-content">
+                        <div class="card-title">{{ card.title }}</div>
+
+                        <div class="card-labels" *ngIf="card.labels && card.labels.length > 0">
+                            <span
+                                class="label-tag"
+                                *ngFor="let label of card.labels"
+                                [style.background]="label.color">
+                                {{ label.name }}
+                            </span>
+                        </div>
+
+                        <div class="card-meta">
+                            <span class="card-actionable" *ngIf="card.isActionable" title="Actionable">
+                                &#9745;
+                            </span>
+                            <span class="card-reminder" *ngIf="card.reminder" title="Has reminder">
+                                &#128276;
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-bucket" *ngIf="getCardCount(bucket._id) === 0">
+                    <p>No cards yet</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Intake Modal -->
+    <div class="modal-overlay" *ngIf="showIntakeModal" (click)="closeIntakeModal()">
+        <div class="modal-content intake-modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>{{ intakeSession ? 'Review Parsed Ideas' : 'New Brain Dump' }}</h2>
+                <button class="close-btn" (click)="closeIntakeModal()">&times;</button>
+            </div>
+
+            <!-- Input Phase -->
+            <div class="modal-body" *ngIf="!intakeSession">
+                <div class="intake-tabs">
+                    <p class="intake-instruction">Paste your Plaud export or upload a file:</p>
+                </div>
+
+                <textarea
+                    class="intake-textarea"
+                    [(ngModel)]="intakeContent"
+                    placeholder="Paste your brain dump here...
+
+Example: 'Okay so I need to remember to call John about the project, also I've been thinking about that new song idea with the minor key progression, and oh yeah motorcycle needs an oil change soon, maybe this weekend...'"
+                    rows="10">
+                </textarea>
+
+                <div class="file-upload">
+                    <label class="file-label">
+                        <input type="file" accept=".txt,.md,.markdown" (change)="onFileSelected($event)">
+                        <span class="file-btn">{{ intakeFile ? intakeFile.name : 'Or upload .txt / .md file' }}</span>
+                    </label>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" (click)="closeIntakeModal()">Cancel</button>
+                    <button
+                        class="btn btn-primary"
+                        (click)="parseIntake()"
+                        [disabled]="isParsingIntake || (!intakeContent.trim() && !intakeFile)">
+                        {{ isParsingIntake ? 'Parsing with Claude...' : 'Parse with AI' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Review Phase -->
+            <div class="modal-body review-phase" *ngIf="intakeSession">
+                <div class="review-header">
+                    <p class="review-stats">
+                        Found <strong>{{ editableIdeas.length }}</strong> ideas
+                        <span *ngIf="intakeSession.processingTimeMs">
+                            (processed in {{ intakeSession.processingTimeMs }}ms)
+                        </span>
+                    </p>
+                </div>
+
+                <div class="ideas-list">
+                    <div class="idea-item" *ngFor="let idea of editableIdeas; let i = index">
+                        <div class="idea-header">
+                            <input
+                                class="idea-title-input"
+                                [(ngModel)]="idea.title"
+                                placeholder="Title">
+                            <button class="remove-idea-btn" (click)="removeIdea(i)" title="Remove">
+                                &times;
+                            </button>
+                        </div>
+
+                        <div class="idea-content">
+                            <p>{{ idea.content }}</p>
+                        </div>
+
+                        <div class="idea-meta">
+                            <select [(ngModel)]="idea.selectedBucket" class="bucket-select">
+                                <option *ngFor="let bucket of buckets" [value]="bucket.name">
+                                    {{ bucket.name }}
+                                </option>
+                            </select>
+
+                            <label class="actionable-toggle">
+                                <input type="checkbox" [(ngModel)]="idea.isActionable">
+                                <span>Actionable</span>
+                            </label>
+
+                            <div class="suggested-labels" *ngIf="idea.suggestedLabels && idea.suggestedLabels.length > 0">
+                                <span class="label-tag" *ngFor="let label of idea.suggestedLabels">
+                                    {{ label }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" (click)="intakeSession = null; editableIdeas = []">
+                        Back to Edit
+                    </button>
+                    <button
+                        class="btn btn-primary"
+                        (click)="confirmIntake()"
+                        [disabled]="isSaving || editableIdeas.length === 0">
+                        {{ isSaving ? 'Creating Cards...' : 'Create ' + editableIdeas.length + ' Cards' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Detail Modal -->
+    <div class="modal-overlay" *ngIf="showCardModal" (click)="closeCardModal()">
+        <div class="modal-content card-modal" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Card Details</h2>
+                <button class="close-btn" (click)="closeCardModal()">&times;</button>
+            </div>
+
+            <div class="modal-body" *ngIf="selectedCard">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input
+                        type="text"
+                        class="form-input"
+                        [(ngModel)]="editingCard.title"
+                        placeholder="Card title">
+                </div>
+
+                <div class="form-group">
+                    <label>Content</label>
+                    <textarea
+                        class="form-textarea"
+                        [(ngModel)]="editingCard.content"
+                        rows="6"
+                        placeholder="Full content...">
+                    </textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bucket</label>
+                        <select [(ngModel)]="editingCard.bucketId" class="form-select">
+                            <option *ngFor="let bucket of buckets" [value]="bucket._id">
+                                {{ bucket.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="editingCard.isActionable">
+                            <span>Actionable</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-info">
+                    <p class="info-text">Created: {{ selectedCard.createdAt | date:'medium' }}</p>
+                    <p class="info-text">Updated: {{ selectedCard.updatedAt | date:'medium' }}</p>
+                    <p class="info-text" *ngIf="selectedCard?.reminder?.pushedToApple">
+                        <span class="pushed-badge">&#10003; Pushed to Apple Reminders</span>
+                        <span *ngIf="selectedCard?.reminder?.pushedAt"> on {{ selectedCard!.reminder!.pushedAt | date:'short' }}</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-danger" (click)="deleteCard()">Delete</button>
+                <button
+                    class="btn btn-apple"
+                    (click)="pushToReminders()"
+                    [disabled]="isPushingToReminders || selectedCard?.reminder?.pushedToApple"
+                    [title]="selectedCard?.reminder?.pushedToApple ? 'Already pushed' : 'Push to Apple Reminders'">
+                    <span class="apple-icon">&#63743;</span>
+                    {{ isPushingToReminders ? 'Pushing...' : (selectedCard?.reminder?.pushedToApple ? 'Synced' : 'Reminders') }}
+                </button>
+                <div class="action-spacer"></div>
+                <button class="btn btn-secondary" (click)="closeCardModal()">Cancel</button>
+                <button
+                    class="btn btn-primary"
+                    (click)="saveCard()"
+                    [disabled]="isSaving">
+                    {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
