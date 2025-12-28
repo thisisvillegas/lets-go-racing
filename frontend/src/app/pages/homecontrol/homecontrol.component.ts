@@ -33,20 +33,31 @@ import { AuthService } from '@auth0/auth0-angular';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
     .page-container {
-      min-height: 100vh;
+      height: 100%;
       display: flex;
       flex-direction: column;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
     }
 
     .navbar {
+      flex-shrink: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
       background: rgba(255, 255, 255, 0.05);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      height: 60px;
     }
 
     .nav-brand {
@@ -106,15 +117,16 @@ import { AuthService } from '@auth0/auth0-angular';
 
     .iframe-container {
       flex: 1;
-      display: flex;
-      min-height: 0;
+      position: relative;
+      overflow: hidden;
     }
 
     iframe {
-      flex: 1;
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      min-height: calc(100vh - 60px);
       border: none;
     }
   `]
