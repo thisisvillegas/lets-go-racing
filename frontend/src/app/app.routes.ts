@@ -26,6 +26,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+        path: 'homecontrol',
+        loadComponent: () => import('./pages/homecontrol/homecontrol.component').then(m => m.HomecontrolComponent),
+        canActivate: [AuthGuard]
+    },
+    {
         path: '**',
         redirectTo: ''
     }
