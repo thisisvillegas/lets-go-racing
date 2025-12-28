@@ -136,7 +136,8 @@ export class RootyComponent {
   iframeUrl: SafeResourceUrl;
 
   constructor(private auth: AuthService, private sanitizer: DomSanitizer) {
-    const host = window.location.hostname;
+    // Use Pi's IP for local network access, localhost for local dev
+    const host = window.location.hostname === 'localhost' ? 'localhost' : '192.168.0.94';
     this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`http://${host}:3004`);
   }
 
