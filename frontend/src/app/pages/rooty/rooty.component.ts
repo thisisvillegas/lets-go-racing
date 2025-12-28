@@ -136,7 +136,6 @@ export class RootyComponent {
   iframeUrl: SafeResourceUrl;
 
   constructor(private auth: AuthService, private sanitizer: DomSanitizer) {
-    // Use Pi's IP with HTTPS for all access
     this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://192.168.0.94:3004');
   }
 

@@ -136,8 +136,8 @@ export class HomecontrolComponent {
   iframeUrl: SafeResourceUrl;
 
   constructor(private auth: AuthService, private sanitizer: DomSanitizer) {
-    // Use Pi's IP with HTTPS for all access
-    this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('https://192.168.0.94:3003');
+    // Use Pi's IP for local network access
+    this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('http://192.168.0.94:3003');
   }
 
   logout() {
