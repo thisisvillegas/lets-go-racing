@@ -107,12 +107,14 @@ import { AuthService } from '@auth0/auth0-angular';
     .iframe-container {
       flex: 1;
       display: flex;
+      min-height: 0;
     }
 
     iframe {
       flex: 1;
       width: 100%;
       height: 100%;
+      min-height: calc(100vh - 60px);
       border: none;
     }
   `]
