@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-homecontrol',
@@ -24,7 +25,7 @@ import { AuthService } from '@auth0/auth0-angular';
 
       <main class="iframe-container">
         <iframe
-          src="http://localhost:3003"
+          [src]="iframeUrl"
           title="Homecontrol"
           frameborder="0"
           allowfullscreen>
@@ -132,7 +133,12 @@ import { AuthService } from '@auth0/auth0-angular';
   `]
 })
 export class HomecontrolComponent {
-  constructor(private auth: AuthService) {}
+  iframeUrl: SafeResourceUrl;
+
+  constructor(private auth: AuthService, private sanitizer: DomSanitizer) {
+    const host = window.location.hostname;
+    this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`http://${host}:3003`);
+  }
 
   logout() {
     this.auth.logout({
