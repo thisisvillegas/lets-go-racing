@@ -31,6 +31,16 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+        path: 'rooty',
+        loadComponent: () => import('./pages/rooty/rooty.component').then(m => m.RootyComponent),
+        canActivate: [AuthGuard]
+    },
+    {
+        path: 'tactiqal',
+        loadComponent: () => import('./pages/tactiqal/tactiqal.component').then(m => m.TactiqalComponent),
+        canActivate: [AuthGuard]
+    },
+    {
         path: '**',
         redirectTo: ''
     }
